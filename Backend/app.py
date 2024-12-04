@@ -18,7 +18,7 @@ else:
     hand_landmark_path = 'mediapipe'  # Ruta local para mediapipe
 
 # Inicializar Flask
-app = Flask(_name_)
+app = Flask(__name__)  # Corregir esta línea
 
 # Intentar cargar el modelo de Keras y manejar el error si el formato es incorrecto
 try:
@@ -158,5 +158,5 @@ def video():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 # Iniciar el servidor Flask
-if _name_ == "_main_":
+if __name__ == "__main__":  # Corregir esta línea
     app.run(host="0.0.0.0", port=5000)
