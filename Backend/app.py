@@ -14,14 +14,25 @@ mp_drawing = mp.solutions.drawing_utils
 
 app = Flask(__name__)
 
+# Variable para almacenar la predicción actual
+current_prediction = "Esperando..."
+
 # Función para predecir la seña
 def predict_gesture(landmarks):
+    global current_prediction
     # Aquí se extraen los puntos clave de los landmarks
     # Usamos las coordenadas de los puntos clave de las manos
     data = np.array([[landmarks[i].x, landmarks[i].y, landmarks[i].z] for i in range(len(landmarks))])
     data = data.flatten().reshape(1, -1)  # Aplanar los puntos para que coincidan con la entrada del modelo
     prediction = model.predict(data)
-    return prediction[0]  # Devuelve la predicción
+    
+    # Mapeo de las predicciones a etiquetas significativas (esto depende de cómo tu modelo fue entrenado)
+    # Suponiendo que la salida del modelo sea un vector de probabilidad para cada letra o seña:
+    letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+    predicted_class = np.argmax(prediction)
+    current_prediction = letters[predicted_class]  # Asumimos que el modelo predice una clase numérica
+    
+    return current_prediction
 
 # Ruta de video en tiempo real
 @app.route('/video')
@@ -44,8 +55,7 @@ def video():
 
                     # Predecir la seña utilizando el modelo
                     prediction = predict_gesture(landmarks.landmark)
-                    cv2.putText(frame, f"Predicción: {prediction}", (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-
+            
             # Convertir la imagen a formato JPEG para enviarla al cliente
             ret, buffer = cv2.imencode('.jpg', frame)
             if not ret:
@@ -61,9 +71,7 @@ def video():
 # Ruta para obtener la predicción
 @app.route('/prediction')
 def prediction():
-    # Aquí puedes devolver la última predicción realizada
-    # En un caso real, probablemente necesitarías almacenar y gestionar las predicciones
-    return jsonify({"prediction": "Seña detectada"})  # Cambiar según la lógica real
+    return jsonify({"prediction": current_prediction})
 
 # Página principal (HTML)
 @app.route('/')
