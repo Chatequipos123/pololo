@@ -18,7 +18,7 @@ else:
     hand_landmark_path = 'mediapipe'  # Ruta local para mediapipe
 
 # Inicializar Flask
-app = Flask(__name__)  # Corregir esta línea
+app = Flask(__name__)
 
 # Intentar cargar el modelo de Keras y manejar el error si el formato es incorrecto
 try:
@@ -52,7 +52,7 @@ word_complete_timeout = 1  # Tiempo sin detección para considerar que la palabr
 # Ruta principal de la aplicación web
 @app.route('/')
 def home():
-    return render_template("index.html")  # Asegúrate de tener un archivo HTML para renderizar la página
+    return render_template("index.html")
 
 # Función para capturar el video y procesarlo
 def generate_frames():
@@ -157,6 +157,12 @@ def generate_frames():
 def video():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+# Función para obtener la predicción actual
+@app.route('/prediction')
+def prediction():
+    global current_word
+    return jsonify({"prediction": current_word})
+
 # Iniciar el servidor Flask
-if __name__ == "__main__":  # Corregir esta línea
+if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
