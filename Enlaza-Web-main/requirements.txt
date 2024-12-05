@@ -1,7 +1,0 @@
-Flask
-tensorflow
-opencv-python-headless==4.7.0.68
-mediapipe==0.10.18
-pillow
-gunicorn
-numpy
